@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "dress"
-    gem.summary = %Q{DOM transformation based on nokogiri}
+    gem.summary = %Q{DOM transformation based on Nokogiri}
     gem.description = %Q{Inspired by the horror of XSLT}
     gem.email = "hayeah@gmail.com"
     gem.homepage = "http://github.com/hayeah/dress"
