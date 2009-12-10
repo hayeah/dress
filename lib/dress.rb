@@ -90,3 +90,46 @@ end
 def Dress(&block)
   Dress.style(&block)
 end
+
+
+class Dress::Maker 
+  class << self
+    def layout(name=nil,&block)
+      @layouts ||= {}
+      if block
+        # define layout
+        @layouts[name] = Nokogiri.make(&block)
+      else # get layout
+        pp @layouts
+        l = @layouts[name]
+        raise "no layout defined for: #{name ? name : 'default'}" unless l
+        l
+      end
+    end
+
+    def render(page,layout_name=nil,*args,&block)
+      p [:layout,layout_name]
+      content = self.new.send(page,*args,&block)
+      p [:content,content]
+      l = layout(layout_name).clone
+      holder = l.at("content")
+      raise "can't find <content> in layout" unless holder
+      holder.replace(content)
+      l
+    end
+  end
+
+  def method_missing(method,*args,&block)
+    Nokogiri.make {
+      #builder = self
+      d = self.send(method,*args,&block)
+    }
+  end
+end
+
+def DressMaker(&block)
+  c = Class.new(Dress::Maker)
+  c.class_eval(&block)
+  c
+end
+
