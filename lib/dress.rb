@@ -171,3 +171,26 @@ def DressMaker(&block)
   c.class_eval(&block)
   c
 end
+
+
+# TODO break this out to a separate loadable file
+class Dress::ActiveView < Dress::Maker
+  require 'action_pack'
+  require 'action_view'
+  extend ActionView::Helpers
+  include ActionView::Helpers
+  DEFAULT_CONFIG = ActionView::DEFAULT_CONFIG unless defined?(DEFAULT_CONFIG)
+
+  def config
+    self.config = DEFAULT_CONFIG unless @config
+    @config
+  end
+
+  def config=(config)
+    @config = ActiveSupport::OrderedOptions.new.merge(config)
+  end
+
+  def initialize(controller)
+    @controller = controller
+  end
+end
