@@ -116,18 +116,23 @@ class Nokogiri::XML::Builder
   end
 end
 
-class Dress::Maker 
+class Dress::Maker
+  require 'active_support'
+  require 'active_support/core_ext'
+
+  class_inheritable_hash :layout_defs
+  self.layout_defs = {}
+  
   class << self
+    
+    
+    def layouts
+      #read_inheritable_attribute(:layouts).keys
+      layout_defs.keys
+    end
+    
     def layout(name=nil,&block)
-      @layouts ||= {}
-      if block
-        # define layout
-        @layouts[name] = block
-      else # get layout
-        l = @layouts[name]
-        raise "no layout defined for: #{name ? name : 'default'}" unless l
-        l
-      end
+      layout_defs[name] = block
     end
 
     def with(name,page,*args,&block)
@@ -153,7 +158,7 @@ class Dress::Maker
 
   def render_with(layout,page,*args,&block)
     content = self.send(page,*args,&block)
-    l = self.instance_eval(&self.class.layout(layout))
+    l = self.instance_eval(&self.class.layout_defs[layout])
     l.at("content").replace(content)
     l
   end

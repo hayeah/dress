@@ -127,4 +127,21 @@ describe "Dress::Maker" do
     d.render(:content1).to_s.should == '<wrap1><wrap2><some_stuff a="10" b="20"><inside></inside></some_stuff></wrap2></wrap1>'
     d.render_with(:foo,:content1).to_s.should == '<foo><some_stuff a="10" b="20"><inside></inside></some_stuff></foo>'
   end
+
+  class D1 < Dress::Maker
+    layout {  foo { content }}
+  end
+
+  class D2 < D1
+    def bar
+      "bar"
+    end
+  end
+  
+  it "inherit layouts" do
+    #p D1.layout_defs
+    #p D2.layout_defs
+    D2.layouts.should_not be_empty
+    #D1.render(:bar)
+  end
 end
