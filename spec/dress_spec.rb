@@ -112,14 +112,19 @@ end
 
 describe "Dress::Maker" do
   it "renders" do
-    d = DressMaker {
-      layout { wrap1 { wrap2 { content }}}
+    d = DressMaker { 
+      layout { n(wrapper_helper) }
       layout(:foo) { foo { content }}
+      
       def content1
         some_stuff(:a => "10", :b => "20") { inside }
       end
+
+      def wrapper_helper
+        wrap1 { wrap2 { content }}
+      end
     }
     d.render(:content1).to_s.should == '<wrap1><wrap2><some_stuff a="10" b="20"><inside></inside></some_stuff></wrap2></wrap1>'
-    d.render(:content1,:foo).to_s.should == '<foo><some_stuff a="10" b="20"><inside></inside></some_stuff></foo>'
+    d.render_with(:foo,:content1).to_s.should == '<foo><some_stuff a="10" b="20"><inside></inside></some_stuff></foo>'
   end
 end

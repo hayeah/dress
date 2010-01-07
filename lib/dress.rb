@@ -91,6 +91,30 @@ def Dress(&block)
   Dress.style(&block)
 end
 
+# TODO move to monkey patch
+class Nokogiri::XML::Builder
+  def n(*docs)
+    docs.each do |doc|
+      case doc
+      when String
+        self << doc
+      when Nokogiri::XML::Node
+        insert(doc)
+        #self << doc.to_s
+        #self.doc.children.each 
+      else
+        raise "bad node: #{doc}" 
+      end
+    end
+  end
+
+  def t(*texts)
+    texts.each do |text|
+      self.text(text.to_s)
+      self.text(" ")
+    end
+  end
+end
 
 class Dress::Maker 
   class << self
@@ -98,25 +122,40 @@ class Dress::Maker
       @layouts ||= {}
       if block
         # define layout
-        @layouts[name] = Nokogiri.make(&block)
+        @layouts[name] = block
       else # get layout
-        pp @layouts
         l = @layouts[name]
         raise "no layout defined for: #{name ? name : 'default'}" unless l
         l
       end
     end
 
-    def render(page,layout_name=nil,*args,&block)
-      p [:layout,layout_name]
+    def with(name,page,*args,&block)
       content = self.new.send(page,*args,&block)
-      p [:content,content]
-      l = layout(layout_name).clone
-      holder = l.at("content")
-      raise "can't find <content> in layout" unless holder
-      holder.replace(content)
+      l = layout(name).clone
+      l.at("content").replace(content)
       l
     end
+
+    def render(page,*args,&block)
+      self.new.render(page,*args,&block)
+    end
+
+    def render_with(layout,page,*args,&block)
+      self.new.render_with(layout,page,*args,&block)
+    end
+  end
+
+  def render(page,*args,&block)
+    # use default layout
+    render_with(nil,page,*args,&block)
+  end
+
+  def render_with(layout,page,*args,&block)
+    content = self.send(page,*args,&block)
+    l = self.instance_eval(&self.class.layout(layout))
+    l.at("content").replace(content)
+    l
   end
 
   def method_missing(method,*args,&block)
@@ -132,4 +171,3 @@ def DressMaker(&block)
   c.class_eval(&block)
   c
 end
-

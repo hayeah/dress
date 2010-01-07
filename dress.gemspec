@@ -9,20 +9,23 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Howard Yeh"]
-  s.date = %q{2009-11-28}
+  s.date = %q{2009-12-10}
   s.description = %q{Inspired by the horror of XSLT}
   s.email = %q{hayeah@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README"
+     "README.html",
+     "README.markdown",
+     "README.textile"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
-     "README",
+     "README.markdown",
      "Rakefile",
      "VERSION",
+     "dress.gemspec",
      "lib/dress.rb",
      "spec/dress_spec.rb",
      "spec/spec.opts",
@@ -32,7 +35,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
-  s.summary = %q{DOM transformation based on nokogiri}
+  s.summary = %q{DOM transformation based on Nokogiri}
   s.test_files = [
     "spec/dress_spec.rb",
      "spec/spec_helper.rb"
